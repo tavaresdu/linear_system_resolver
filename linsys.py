@@ -65,12 +65,7 @@ class LinearSystem:
         m = self.__matrix
         r = [0 for x in xrange(len(m))]
 
-        for x in xrange(len(m)):
-            piv = m[x][x]
-            for y in xrange(len(m[0])):
-                if x != y:
-                    m[x][y] = m[x][y]/piv
-            m[x][x] = 1
+        self.isolate_variables()
 
         mc = None
         rc = None
@@ -99,3 +94,39 @@ class LinearSystem:
 
     def gauss_seidel(self):
         m = self.__matrix
+        r = [0 for x in xrange(len(m))]
+
+        self.isolate_variables()
+
+        mc = None
+        rc = None
+        counter = 0
+
+        while r != rc:
+            print counter,'=',r
+            mc = deepcopy(m)
+            rc = deepcopy(r)
+
+            for x in xrange(len(m)):
+                for y in xrange(len(m[0])):
+                    if x != y and y < len(r):
+                        mc[x][y] = mc[x][y] * r[y]
+                        mc[x][-1] = mc[x][-1] - mc[x][y]
+                        mc[x][y] = 0
+                r[x] = mc[x][-1]
+
+            counter = counter + 1
+
+        self.__matrix = deepcopy(mc)
+        print ''
+        self.show_matrix()
+
+    def isolate_variables(self):
+        m = self.__matrix
+
+        for x in xrange(len(m)):
+            piv = m[x][x]
+            for y in xrange(len(m[0])):
+                if x != y:
+                    m[x][y] = m[x][y]/piv
+            m[x][x] = 1
